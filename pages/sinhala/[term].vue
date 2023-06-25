@@ -1,13 +1,22 @@
 <script setup>
 const route = useRoute()
+import { getPossibleMatches, isSinglishQuery } from '@pnfo/singlish-search'
 import { useSinhalaStore } from '@/stores/sinhala'
-import { useSettingsStore } from '@/stores/settings'
-const store = useSinhalaStore(), settingsStore = useSettingsStore()
+import { useSavedStore, useSettingsStore } from '@/stores/savedStore'
+const store = useSinhalaStore(), settingsStore = useSettingsStore(), historyStore = useSavedStore('history')
+
+const searchTerm = computed(() => route.params.term.trim())
 
 const items = computed(() => {
+  const term = searchTerm.value
+  const matches = isSinglishQuery(term) ? getPossibleMatches(term) : [term]
+  const regexpStr = `^(${matches.join('|')})`
+
   const pattern = /(^\d+\. ?|\[.*?\]|\(.*?\.\))/g, sankhethaPatttern = /\[.*?\]|\(.*?\.\)/
-  return store.search(route.params.term)
-    .map(prop => ({...prop, meaning: prop.meaning.map(l => l.split(pattern)
+  const results = store.search(regexpStr, 50)
+  historyStore.setState(term, results.length)
+
+  return results.map(prop => ({...prop, meaning: prop.meaning.map(l => l.split(pattern)
       .filter(pt => pt.length).map(text => {
         let type = 'normal', tooltip
         if (sankhethaPatttern.test(text)) {
@@ -25,15 +34,29 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="store.loaded" :style="settingsStore.fontSizeStyle" class="ml-2">
-      <div class="search-info">{{ `search term ${route.params.term} has ${items.length} results` }}</div>
+    <div v-if="store.loaded" :style="settingsStore.fontSizeStyle">
+      <div class="ma-2">
+        <v-alert v-if="items.length == 0" color="error" icon="$error" density="compact"
+          :text="`“${searchTerm}” යන සෙවුම සඳහා ගැළපෙන වචන ශබ්දකෝෂ වල අඩංගු නොවේ.`"></v-alert>
+        <v-alert v-else-if="items.length < 50" color="success" icon="$success" density="compact"
+          :text="`“${searchTerm}” යන සෙවුම සඳහා ගැළපෙන වචන ${items.length} ක් හමුවිය.`"></v-alert>
+        <v-alert v-else color="warning" icon="$warning" density="compact"
+          :text="`“${searchTerm}” යන සෙවුම සඳහා ගැළපෙන වචන ${items.length} ක් හමුවිය.`"></v-alert>
+      </div>
 
-      <div class="list">
-        <div class="row ma-2" v-for="item in items" :key="item.title">
+      <!-- <div class="list"> -->
+      <v-container fluid>
+      <v-row dense>
+      <v-col cols="12" sm="6" xl="4" v-for="item in items" :key="item.title">
+        <!-- <div class="row ma-2" v-for="item in items" :key="item.title"> -->
+        <v-card class="pa-2">
+          <!-- <v-card-title> -->
           <div class="title">
             <span class="word">{{ item.words.join(', ') }}</span>
             <span v-if="item.breakup" class="breakup pl-2">{{ item.breakup }}</span>
           </div>
+          <!-- </v-card-title>
+          <v-card-text> -->
           <div class="meaning">
             <div v-for="(line, i) in item.meaning" :key="i">
               <span v-for="part in line" :class="part.type">
@@ -42,8 +65,13 @@ onMounted(() => {
               </span>
             </div>
           </div>
-        </div>
-      </div>
+          <!-- </v-card-text> -->
+        </v-card>
+        <!-- </div> -->
+      </v-col>
+      </v-row>
+      </v-container>
+      <!-- </div> -->
     </div>
 </template>
 

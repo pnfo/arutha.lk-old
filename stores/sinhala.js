@@ -1,14 +1,14 @@
 
-
-
 export const useSinhalaStore = defineStore('sinhala', () => {
     const count = ref(0)
-    const entries = [], sankhetha = {} // not reactive but const
-    const loaded = ref(false)
     const doubleCount = computed(() => count.value * 2)
     function increment() {
       count.value++
     }
+
+
+    const entries = [], sankhetha = {} // not reactive but const
+    const loaded = ref(false), searchCache = reactive({})
     
     async function loadStrings() {
         try {
@@ -28,9 +28,19 @@ export const useSinhalaStore = defineStore('sinhala', () => {
             console.error('Error loading strings:', error);
         }
     }
-    const search = computed(() => (term) => {
-        if (!loaded.value) return []
-        return entries.filter(({words}) => words.some(w => w.startsWith(term)))
+    const search = computed(() => (regexpStr, maxResults = 50) => {
+        if (searchCache[regexpStr]) return searchCache[regexpStr]
+
+        const results = [], regexp = new RegExp(regexpStr)
+        if (!loaded.value) return results
+        loop: for (const entry of entries) {
+            if (entry.words.some(w => regexp.test(w))) {
+                results.push(entry)
+                if (results.length >= maxResults) break loop
+            }
+        }
+        searchCache[regexpStr] = results
+        return results
     })
     function parseDictionary(text) {
         return text.split('\n\n').map(g => g.split('\n').map(l => l.trim()))
@@ -41,5 +51,5 @@ export const useSinhalaStore = defineStore('sinhala', () => {
             })
     }
   
-    return { count, search, doubleCount, increment, loadStrings, loaded, sankhetha }
+    return { count, doubleCount, increment, search, loadStrings, loaded, sankhetha }
 })

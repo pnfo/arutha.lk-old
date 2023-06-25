@@ -1,5 +1,5 @@
 <script setup>
-import { useSettingsStore } from '@/stores/settings'
+import { useSettingsStore } from '@/stores/savedStore'
 import { useTheme } from 'vuetify'
 const theme = useTheme()
 const settingsStore = useSettingsStore()

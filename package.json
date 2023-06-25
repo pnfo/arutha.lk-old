@@ -17,6 +17,7 @@
   "dependencies": {
     "@mdi/font": "^7.2.96",
     "@pinia/nuxt": "^0.4.11",
+    "@pnfo/singlish-search": "^1.2.0",
     "axios": "^1.4.0",
     "json-beautify": "^1.1.1",
     "pinia": "^2.1.4",

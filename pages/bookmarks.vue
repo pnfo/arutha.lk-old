@@ -1,5 +1,5 @@
 <script lang="js" setup>
-  import { useSettingsStore } from '@/stores/settings'
+  import { useSettingsStore } from '@/stores/savedStore'
   const settingsStore = useSettingsStore()
   useSeoMeta({
     title: 'Bookmarks',
