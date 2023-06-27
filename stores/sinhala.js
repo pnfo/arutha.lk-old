@@ -12,7 +12,6 @@ export const useSinhalaStore = defineStore('sinhala', () => {
     
     async function loadStrings() {
         try {
-            // Use your own logic to load the strings from Pinata or any other source
             const config = useRuntimeConfig()
             // if called one after the other will cause an error
             // see here https://github.com/nuxt/nuxt/issues/18539
@@ -47,7 +46,7 @@ export const useSinhalaStore = defineStore('sinhala', () => {
             .map(g => {
                 const breakup = /^\[.+?\+.+?\]$/.test(g[1]) ? g[1] : ''
                 const meaning = breakup ? g.slice(2) : g.slice(1)
-                return {words: g[0].split(','), meaning, breakup}
+                return {word: g[0], words: g[0].split(', '), meaning, breakup}
             })
     }
   

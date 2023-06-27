@@ -13,7 +13,8 @@ const sankhethaCountsSquare = {}, sankhethaCountsRound = {}
 
 const json = entries.forEach(({word, meaning}) => {
     if (word.includes('[') || word.includes(' (')) console.log(`brackets in word ${word}`)
-    const subWords = word.split(',')
+    const subWords = word.split(', ')
+    if (subWords.length != word.split(',').length) console.log(`does not have space after comma in ${word}`)
     if (subWords.length > 1 && subWords.filter(w => w.length <= 2).length) console.log(`short word part in ${word}`)
     if (!meaning.length) console.log(`empty meaning for word ${word}`)
     const shortMeaning = meaning.filter(l => l.length < 10 && !l.includes('['))

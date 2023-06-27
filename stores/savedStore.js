@@ -18,17 +18,27 @@ export function useSavedStore(storeId, initialObject = {}) {
             // do not save if not already read from storage
             if (process.client && isLoaded.value) localStorage.setItem(storeId, JSON.stringify(state))
         }
+        function unsetState(name) {
+            delete state[name]
+            if (process.client && isLoaded.value) localStorage.setItem(storeId, JSON.stringify(state))
+        }
       
-        return { loadState, setState, state }
+        return { loadState, setState, unsetState, state }
     })()
 }
 
+const snackbarTypeToMsg = {
+    'link-copied': 'සබැඳිය පිටපත් විය. ඔබට අවශ්‍ය තැනක අලවන්න.',
+    'content-copied': 'ඡේදයේ අන්තර්ගතය පිටපත් විය. අවශ්‍ය තැනක අලවන්න.',
+    'bookmark-added': 'bookmark added',
+    'bookmark-deleted': 'bookmark deleted'
+}
 export const useSettingsStore = defineStore('settings-parent', () => {
     const savedStore = useSavedStore('settings', {
         darkMode: true,
         fontSize: 0, // use as fontSize: 18 + state.fontSize + 'px'
         count: 0,
-    })
+    }), snackbar = reactive({model: false})
 
     const doubleCount = computed(() => savedStore.state.count * 2)
     function increment() {
@@ -44,5 +54,14 @@ export const useSettingsStore = defineStore('settings-parent', () => {
         savedStore.setState(name, value)
     }
 
-    return { doubleCount, increment, loadSettings, setSetting, settings: savedStore.state, fontSizeStyle }
+    function setSnackbar({ timeout, message, type }) {
+        if (!message && type) message = snackbarTypeToMsg[type]
+        if (message) {
+            Object.assign(snackbar, { model: true, timeout: timeout || 2000, message })
+        }
+    }
+
+    return { doubleCount, increment, 
+        loadSettings, setSetting, settings: savedStore.state, fontSizeStyle, 
+        setSnackbar, snackbar }
 })
