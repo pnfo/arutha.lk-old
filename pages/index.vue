@@ -1,11 +1,9 @@
 <script lang="js" setup>
-useSeoMeta({
-    title: 'Sinhala Dictionary Home',
-    description: 'Arutha Sinhala Dictionary of Sri Lanka. Find meanings of Sinhala words.',
-    ogImage: 'https://arutha.lk/ogimage.png'
-})
 import { useSettingsStore } from '@/stores/savedStore'
+import { getSeoTags } from '@/stores/utils';
 const settingsStore = useSettingsStore()
+
+useSeoMeta(getSeoTags('අරුත.lk සිංහල ශබ්දකෝෂය', 'මුල් පිටුව Home Page - අරුත.lk සිංහල ශබ්දකෝෂය. වචනවල තේරුම් අර්ථයන් සොයන්න.'))
 </script>
 
 <template>
@@ -17,8 +15,8 @@ const settingsStore = useSettingsStore()
       <div class="text-primary" style="font-size: 4em; text-align: center;">අරුත.lk</div>
       <ul class="mx-8">
         <li>සෙවීම සඳහා උඩ කොටුවේ සෙවුම් පද යොදන්න.</li>
-        <li>ඉංග්‍රීසි අකුරු හෝ සිංහල අකුරු යොදා ගෙන සෙවීම සිදු කළ හැකිය. උදා. <a href="/sinhala/janaka">janaka</a>, <a href="/sinhala/ජනක">ජනක</a></li>
-        <li>සෙවුම් පදයෙන් ආරම්භ වන සියලුම වචන පෙන්වන අතර සෙවුම් පදයෙන් අවසන් වීම ද සිදුවිය යුතු නම්  අගට තිත යොදන්න. උදා <a href="/sinhala/ජනක.">ජනක.</a></li>
+        <li>ඉංග්‍රීසි අකුරු හෝ සිංහල අකුරු යොදා ගෙන සෙවීම සිදු කළ හැකිය. උදා. <NuxtLink to="/sinhala/janaka">janaka</NuxtLink>, <NuxtLink to="/sinhala/ජනක">ජනක</NuxtLink></li>
+        <li>සෙවුම් පදයෙන් ආරම්භ වන සියලුම වචන පෙන්වන අතර සෙවුම් පදයෙන් අවසන් වීම ද සිදුවිය යුතු නම් අගට තිතක් යොදන්න. උදා <NuxtLink to="/sinhala/ජනක.">ජනක.</NuxtLink></li>
       </ul>
       </v-sheet>
   </div>

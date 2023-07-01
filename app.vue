@@ -7,8 +7,8 @@
         </template>
 
         <v-spacer></v-spacer>
-        <v-text-field style="width: 100%; max-width: 400px;" placeholder="සෙවුම් පද මෙතැන යොදන්න" 
-          density="compact" hide-details @update:modelValue="doSearch" clearable></v-text-field>
+        <v-text-field style="width: 100%; max-width: 400px;" placeholder="සෙවුම් පද මෙතැන යොදන්න" v-model="searchTerm"
+          density="compact" hide-details @update:modelValue="doSearch" @update:focused="checkSearch"></v-text-field>
         <!-- <v-app-bar-title color="primary" class="app-title">අරුත.lk</v-app-bar-title> -->
 
         <v-spacer></v-spacer>
@@ -29,13 +29,14 @@
             <template v-slot:prepend><v-icon color="star">mdi-star</v-icon></template>
             <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">තරුයෙදූ / Bookmarks</v-list-item-title>
           </v-list-item>
-          <!-- <v-list-item prepend-icon="mdi-history" to="/history">
-            <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">සෙවුම් ඉතිහාසය</v-list-item-title>
-          </v-list-item> -->
+          <v-list-item prepend-icon="mdi-book-open-page-variant-outline" to="/bookpage/1">
+            <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">පොතේ පිටු</v-list-item-title>
+          </v-list-item>
           <v-list-item prepend-icon="mdi-forum" to="/about" nuxt>
             <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">අප ගැන</v-list-item-title>
           </v-list-item>
           <v-list-item prepend-icon="mdi-cog" to="/settings">
+            <template v-slot:prepend><v-icon color="primary">mdi-cog</v-icon></template>
             <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">සැකසුම් / Settings</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -59,14 +60,18 @@
 useHead({
   titleTemplate: (titleChunk) => titleChunk ? `${titleChunk} - Arutha.lk` : 'Arutha.lk',
 })
-function doSearch(val) {
-  if (val) navigateTo('/sinhala/' + val.trim())
+const searchTerm = ref('')
+function doSearch(term) {
+  if (term.length) navigateTo('/sinhala/' + term.trim())
+}
+function checkSearch(focused) {
+  if (focused && searchTerm.value.length && !useRoute().path.includes('sinhala')) doSearch(searchTerm.value)
 }
 import { useSinhalaStore } from '@/stores/sinhala'
 await useSinhalaStore().loadStrings()
 
 import { useSavedStore, useSettingsStore } from '@/stores/savedStore'
-const settingsStore = useSettingsStore(), initStoreIds = ['history', 'bookmarks']
+const settingsStore = useSettingsStore(), initStoreIds = ['bookmarks']
 import { useTheme, useDisplay } from 'vuetify'
 const drawer = ref(useDisplay().smAndUp)
 
@@ -78,8 +83,6 @@ onMounted(() => {
   console.log(`settings darkMode = ${settingsStore.settings.darkMode}`)
   useTheme().global.name.value = settingsStore.settings.darkMode ? 'dark' : 'light'
 })
-
-
 </script>
 
 <style>

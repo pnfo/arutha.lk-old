@@ -1,13 +1,8 @@
 <script lang="js" setup>
   import { useSettingsStore, useSavedStore } from '@/stores/savedStore'
+  import { getSeoTags, toggleBookmark } from '@/stores/utils'
   const settingsStore = useSettingsStore(), bookmarksStore = useSavedStore('bookmarks')
-  useSeoMeta({
-    title: 'Bookmarks',
-    ogTitle: 'Bookmarks',
-    description: 'Arutha Sinhala Dictionary bookmarks',
-    ogDescription: 'Arutha Sinhala Dictionary bookmarks',
-    ogImage: 'https://arutha.lk/ogimage.png'
-  })
+  useSeoMeta(getSeoTags('තරු යෙදූ - Bookmarks', 'ඔබ විසින් තරු යොදන ලද වචන - අරුත.lk සිංහල ශබ්දකෝෂය'))
 
   const bookmarks = computed(() => {
     return Object.entries(bookmarksStore.state).map(([word, info]) => [word, tsToStr(info.time)])
@@ -19,14 +14,6 @@
     else if (86400 > seconds) return `පැය ${Math.floor(seconds / 3600)} කට පෙර`
     else if (2592000 > seconds) return `දින ${Math.floor(seconds / 86400)} කට පෙර`
     else return `මාස ${Math.floor(seconds / 2592000)} කට පෙර`
-  }
-  function deleteBookmark(word) {
-    bookmarksStore.unsetState(word) 
-    settingsStore.setSnackbar({ type: 'bookmark-deleted' })
-  }
-  function addBookmark(word) {
-    bookmarksStore.setState(word, {time: Date.now(), coll: 'user'})
-    settingsStore.setSnackbar({ type: 'bookmark-added' })
   }
 </script>
 
@@ -48,7 +35,7 @@
              <div class="title">
               <span class="word">{{ word }}</span>
               <span class="time pl-2">{{ timeStr }}</span>
-              <v-btn icon="mdi-delete" color="error" @click="deleteBookmark(word)" 
+              <v-btn icon="mdi-delete" color="error" @click="toggleBookmark(word, true)" 
                 size="small" variant="plain" density="compact" class="ml-1"></v-btn>
               
               <v-btn icon="mdi-arrow-right" color="success" :to="`/sinhala/${word.split(', ')[0]}.`" 

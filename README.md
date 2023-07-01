@@ -1,4 +1,4 @@
-# Nuxt 3 Minimal Starter
+# Arutha.lk Sinhala Dictionay
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
@@ -22,12 +22,15 @@ npm run dev
 
 ## Production
 
-Build the application for production:
+Build the application for production and deploy
 
-```bash
-# npm
-npm run build
-```
+* `npm run build`
+* copy `.output` folder to production server
+* run `node server/index.mjs`
+* point the nginx server conf to the `127.0.0.1:3000`
+* note: I had to upgrade the node version to 16.20.1 or above. Otherwise had an error
+* `pm2 start server/index.mjs --name arutha-lk-server`
+* `pm2 save` (save after changing any process parameters)
 
 Locally preview production build:
 

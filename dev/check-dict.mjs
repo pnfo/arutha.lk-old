@@ -42,3 +42,8 @@ fs.writeFileSync(`dev/sankhetha-counts-square.csv`, Object.entries(sankhethaCoun
     .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
 fs.writeFileSync(`dev/sankhetha-counts-round.csv`, Object.entries(sankhethaCountsRound)
     .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
+
+// write sitemap file
+const numEntriesPerPage = 24, numPages = Math.ceil(entries.length / numEntriesPerPage), sitemapLines = []
+for (let i = 1; i <= numPages; i++) sitemapLines.push(`https://arutha.lk/bookpage/` + i)
+fs.writeFileSync('public/sitemap.txt', sitemapLines.join('\n'), 'utf-8')

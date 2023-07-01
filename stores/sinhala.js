@@ -1,12 +1,5 @@
 
 export const useSinhalaStore = defineStore('sinhala', () => {
-    const count = ref(0)
-    const doubleCount = computed(() => count.value * 2)
-    function increment() {
-      count.value++
-    }
-
-
     const entries = [], sankhetha = {} // not reactive but const
     const loaded = ref(false), searchCache = reactive({})
     
@@ -50,5 +43,5 @@ export const useSinhalaStore = defineStore('sinhala', () => {
             })
     }
   
-    return { count, doubleCount, increment, search, loadStrings, loaded, sankhetha }
+    return { search, loadStrings, loaded, entries, sankhetha }
 })
