@@ -4,12 +4,12 @@
  */
 import fs from 'fs'
 
-const sankhetha = JSON.parse(fs.readFileSync('public/akshara-vinyasa-sanketha.json'))
-const entries = fs.readFileSync('public/akshara-vinyasa.txt', 'utf-8').split('\n\n')
+const sanketha = JSON.parse(fs.readFileSync('public/akshara-vinyasa-sanketha.json'))
+const entries = fs.readFileSync('public/akshara-vinyasa-dict.txt', 'utf-8').split('\n\n')
     .map(g => g.split('\n').map(l => l.trim())).map(g => ({word: g[0], meaning: g.slice(1)}))
 
 console.log(`found ${entries.length} entries`)
-const sankhethaCounts = {}
+const sankethaCounts = {}
 
 const json = entries.forEach(({word, meaning}) => {
     if (word.includes('[') || word.includes(' (')) console.log(`brackets in word ${word}`)
@@ -18,30 +18,30 @@ const json = entries.forEach(({word, meaning}) => {
     if (subWords.length > 1 && subWords.filter(w => w.length <= 2).length) console.log(`short word part in ${word}`)
     if (!meaning.length) console.log(`empty meaning for word ${word}`)
     if (meaning.length != 1) console.log(`meaning too many lines in word ${word}, ${meaning.length}`)
-    if (!meaning[0].startsWith('(')) console.log(`meaning does not start with ( for ${word}`)
+    if (!meaning[0].startsWith('[')) console.log(`meaning does not start with [ for ${word}`)
     
     meaning.forEach(line => {
-        [...line.matchAll(/\(([^\)\+]+)\)/g)].map(m => m[1]).forEach(san => {
-            if (!sankhetha[san]) console.log(`sankhetha ${san} not found. in word ${word}`)
-            sankhethaCounts[san] = (sankhethaCounts[san] || 0) + 1
+        [...line.matchAll(/\[([^\]\+]+)\]/g)].map(m => m[1]).forEach(san => {
+            if (!sanketha[san]) console.log(`sanketha ${san} not found. in word ${word}`)
+            sankethaCounts[san] = (sankethaCounts[san] || 0) + 1
         })
     })
     meaning.forEach(line => {
-        [...line.matchAll(/\[.*?(\S+?\.) .*?\]/g)].map(m => m[1]).forEach(san => {
-            if (!sankhetha[san]) console.log(`sankhetha ${san} not found. in word ${word}`)
-            sankhethaCounts[san] = (sankhethaCounts[san] || 0) + 1
+        [...line.matchAll(/\([^\)]*?(\S+?\.) .*?\)/g)].map(m => m[1]).forEach(san => {
+            if (!sanketha[san]) console.log(`sanketha ${san} not found. in word ${word}`)
+            sankethaCounts[san] = (sankethaCounts[san] || 0) + 1
         })
     })
     
     return [word, meaning]
 })
 
-fs.writeFileSync(`dev/sankhetha-counts-av.csv`, Object.entries(sankhethaCounts)
+fs.writeFileSync(`dev/sanketha-counts-av.csv`, Object.entries(sankethaCounts)
     .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
-// fs.writeFileSync(`dev/sankhetha-counts-round.csv`, Object.entries(sankhethaCountsRound)
+// fs.writeFileSync(`dev/sanketha-counts-round.csv`, Object.entries(sankethaCountsRound)
 //     .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
 
 // write sitemap file
 const numEntriesPerPage = 24, numPages = Math.ceil(entries.length / numEntriesPerPage), sitemapLines = []
-for (let i = 1; i <= numPages; i++) sitemapLines.push(`https://arutha.lk/bookpage/av-` + i)
-fs.writeFileSync('public/sitemap-av.txt', sitemapLines.join('\n'), 'utf-8')
+for (let i = 1; i <= numPages; i++) sitemapLines.push(`https://arutha.lk/bookpage/akshara-vinyasa/${i}`)
+fs.writeFileSync('public/sitemap-akshara-vinyasa.txt', sitemapLines.join('\n'), 'utf-8')

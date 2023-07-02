@@ -1,28 +1,30 @@
 <script lang="js" setup>
 import { copyClipboard, toggleBookmark } from '@/stores/utils';
 import { useSavedStore } from '@/stores/savedStore';
-import { useSinhalaStore } from '@/stores/sinhala';
-const bookmarksStore = useSavedStore('bookmarks'), sinhalaStore = useSinhalaStore()
+import { dictionaryInfos, useSinhalaStore } from '@/stores/sinhala';
 
 const props = defineProps({
   entry: Object,
 })
+const dictInfo = computed(() => dictionaryInfos[props.entry.dict])
+const bookmarksStore = useSavedStore('bookmarks')
+
 const item = computed(() => {
   const entry = props.entry
-  const pattern = /(^\d+\. ?|\[.*?\]|\(.*?\.\))/g, sankhethaPatttern = /\[.*?\]|\(.*?\.\)/
+  // TODO patterns need to be changed for the akshaya vinyasa dict. currently does not show sankheta within round brackets
+  const pattern = /(^\d+\. ?|\[.*?\]|\(.*?\.\))/g, sankethaPatttern = /\[.*?\]|\(.*?\.\)/
   return {...entry, starred: bookmarksStore.state[entry.word], 
     lineParts: entry.meaning.map(l => l.split(pattern)
       .filter(pt => pt.length).map(text => {
         let type = 'normal', tooltip
-        if (sankhethaPatttern.test(text)) {
+        if (sankethaPatttern.test(text)) {
           const upart = text.slice(1, -1)
-          tooltip = sinhalaStore.sankhetha[upart]
-          if (tooltip) type = 'sankhetha'
+          tooltip = useSinhalaStore(dictInfo.value.id).sanketha[upart]
+          if (tooltip) type = 'sanketha'
         }
         return {type, text, tooltip}
     }))}
 })
-
 </script>
 
 <template>
@@ -31,6 +33,7 @@ const item = computed(() => {
     <v-card class="pa-2" v-bind="props">
 
       <div class="title">
+        <v-icon size="small" :color="dictInfo.color">{{ dictInfo.icon }}</v-icon>
         <span class="word">{{ item.word }}</span>
         <span v-if="item.breakup" class="breakup pl-2">{{ item.breakup }}</span>
         <v-btn v-if="isHovering || item.starred" icon="mdi-star" color="star" @click="toggleBookmark(item.word, item.starred)" 
@@ -56,7 +59,7 @@ const item = computed(() => {
 <style scoped>
 .word { font-size: 1.2em; color: rgb(var(--v-theme-primary)) }
 span.breakup {font-size: 1em; color: rgb(var(--v-theme-info)) }
-span.sankhetha { font-size: 0.8em; color: rgb(var(--v-theme-success)) }
+span.sanketha { font-size: 0.8em; color: rgb(var(--v-theme-success)) }
 .breakup { font-size: 1em; }
 .meaning { font-size: 1em; }
 </style>

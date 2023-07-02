@@ -29,7 +29,7 @@
             <template v-slot:prepend><v-icon color="star">mdi-star</v-icon></template>
             <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">තරුයෙදූ / Bookmarks</v-list-item-title>
           </v-list-item>
-          <v-list-item prepend-icon="mdi-book-open-page-variant-outline" to="/bookpage/1">
+          <v-list-item prepend-icon="mdi-book-open-page-variant-outline" to="/bookpage/sankshiptha/1">
             <v-list-item-title :style="settingsStore.fontSizeStyle" class="py-2">පොතේ පිටු</v-list-item-title>
           </v-list-item>
           <v-list-item prepend-icon="mdi-forum" to="/about" nuxt>
@@ -61,14 +61,20 @@ useHead({
   titleTemplate: (titleChunk) => titleChunk ? `${titleChunk} - Arutha.lk` : 'Arutha.lk',
 })
 const searchTerm = ref('')
+// prevent multiple searches that makes the UI sluggish when typing fast in the search box
+let timeoutId
 function doSearch(term) {
-  if (term.length) navigateTo('/sinhala/' + term.trim())
+    if (!term.trim().length) return
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => navigateTo('/sinhala/' + term.trim()), 400)
 }
 function checkSearch(focused) {
-  if (focused && searchTerm.value.length && !useRoute().path.includes('sinhala')) doSearch(searchTerm.value)
+    if (focused && searchTerm.value.length && !useRoute().path.includes('sinhala')) doSearch(searchTerm.value)
 }
-import { useSinhalaStore } from '@/stores/sinhala'
-await useSinhalaStore().loadStrings()
+import { useSinhalaStore, dictionaryInfos } from '@/stores/sinhala'
+for (const info of dictionaryInfos) {
+    await useSinhalaStore(info.id).loadData()
+}
 
 import { useSavedStore, useSettingsStore } from '@/stores/savedStore'
 const settingsStore = useSettingsStore(), initStoreIds = ['bookmarks']
@@ -76,12 +82,11 @@ import { useTheme, useDisplay } from 'vuetify'
 const drawer = ref(useDisplay().smAndUp)
 
 onMounted(() => {
-  console.log('app is mounted hook')
-  settingsStore.loadSettings()
-  initStoreIds.forEach(id => useSavedStore(id).loadState())
+    settingsStore.loadSettings()
+    initStoreIds.forEach(id => useSavedStore(id).loadState())
 
-  console.log(`settings darkMode = ${settingsStore.settings.darkMode}`)
-  useTheme().global.name.value = settingsStore.settings.darkMode ? 'dark' : 'light'
+    console.log(`settings darkMode = ${settingsStore.settings.darkMode}`)
+    useTheme().global.name.value = settingsStore.settings.darkMode ? 'dark' : 'light'
 })
 </script>
 

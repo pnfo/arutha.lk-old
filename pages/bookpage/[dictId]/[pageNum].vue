@@ -1,18 +1,19 @@
 <script setup>
 const route = useRoute()
-import { useSinhalaStore } from '@/stores/sinhala'
+import { useSinhalaStore, dictionaryInfos } from '@/stores/sinhala'
 import { useSettingsStore } from '@/stores/savedStore'
 import { getSeoTags, copyClipboard } from '@/stores/utils';
-const sinhalaStore = useSinhalaStore(), settingsStore = useSettingsStore()
 
-const paramNum = parseInt(route.params.pageNum.trim(), 10);
+const paramNum = parseInt(route.params.pageNum.trim(), 10), dictInfo = dictionaryInfos.find(({id}) => route.params.dictId == id)
+const sinhalaStore = useSinhalaStore(dictInfo.id), settingsStore = useSettingsStore()
+
 const resultsPerPage = 24, pageNumber = ref(isNaN(paramNum) ? 1 : paramNum)
 useSeoMeta(getSeoTags(`පොතේ ${pageNumber.value} පිටුවේ වචන`, `පොතේ ${pageNumber.value} පිටුවේ වචන - අරුත.lk සිංහල ශබ්දකෝෂය.`))
 
 const router = useRouter()
 watch(pageNumber, (pageNum, previous) => {
   if (parseInt(pageNum) && pageNum) {
-    router.replace('/bookpage/' + pageNum) // this will change the addressbar without refreshing the whole page
+    router.replace(`/bookpage/${dictInfo.id}/${pageNum}`) // this will change the addressbar without refreshing the whole page
   }
 })
 
@@ -20,6 +21,7 @@ const numberOfPages = computed(() => Math.ceil(sinhalaStore.entries.length / res
 const items = computed(() => {
   const pageNum = pageNumber.value - 1
   return sinhalaStore.entries.slice(pageNum * resultsPerPage, (pageNum + 1) * resultsPerPage)
+    .map(entry => ({...entry, dict: dictInfo.index}))
 })
 
 const pageStatus = computed(() => {
@@ -61,7 +63,7 @@ const pageStatus = computed(() => {
         <DictionaryEntry :entry="item"></DictionaryEntry>
       </v-col>
       <v-col cols="12" sm="6" xl="4" v-if="pageNumber < numberOfPages">
-        <v-btn :to="'/bookpage/' + (pageNumber + 1)" variant="tonal" size="large" append-icon="mdi-chevron-right">ඊළඟ පිටුවට</v-btn></v-col>
+        <v-btn :to="`/bookpage/${dictInfo.id}/${pageNumber + 1}`" variant="tonal" size="large" append-icon="mdi-chevron-right">ඊළඟ පිටුවට</v-btn></v-col>
     </v-row>
     </v-container>
   </div>

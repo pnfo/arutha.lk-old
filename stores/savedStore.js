@@ -3,12 +3,12 @@
 // export factory function for creating dynamic stores
 export function useSavedStore(storeId, initialObject = {}) {
     return defineStore(storeId, () => {
-        const state = reactive({}), isLoaded = ref(false)
+        const state = reactive(initialObject), isLoaded = ref(false)
         
         function loadState() {
             if (process.server || isLoaded.value) return // only call this from client and once
             const stateStr = localStorage.getItem(storeId)
-            Object.assign(state, stateStr ? JSON.parse(stateStr) : initialObject)
+            if (stateStr) Object.assign(state, JSON.parse(stateStr))
             console.log(`${storeId} state loaded from ${stateStr || 'initial object'}`)
             isLoaded.value = true
         }
@@ -38,6 +38,7 @@ export const useSettingsStore = defineStore('settings-parent', () => {
         darkMode: true,
         fontSize: 0, // use as fontSize: 18 + state.fontSize + 'px'
         count: 0,
+        dicts: [0, 1],
     }), snackbar = reactive({model: false})
 
     const doubleCount = computed(() => savedStore.state.count * 2)
