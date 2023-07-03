@@ -3,13 +3,15 @@
  * the text file needs to be read and parsed by the website directly
  */
 import fs from 'fs'
+import vkb from 'vkbeautify'
 
-const sanketha = JSON.parse(fs.readFileSync('public/sankshiptha-sanketha.json'))
-const entries = fs.readFileSync('public/sankshiptha-dict.txt', 'utf-8').split('\n\n')
+const dictId = 'sankshiptha'
+const sanketha = JSON.parse(fs.readFileSync(`public/${dictId}-sanketha.json`))
+Object.keys(sanketha).forEach(san => sanketha[san] = {title: sanketha[san], count: 0})
+const entries = fs.readFileSync(`public/${dictId}-dict.txt`, 'utf-8').split('\n\n')
     .map(g => g.split('\n').map(l => l.trim())).map(g => ({word: g[0], meaning: g.slice(1)}))
 
 console.log(`found ${entries.length} entries`)
-const sankethaCountsSquare = {}, sankethaCountsRound = {}
 
 const json = entries.forEach(({word, meaning}) => {
     if (word.includes('[') || word.includes(' (')) console.log(`brackets in word ${word}`)
@@ -25,25 +27,24 @@ const json = entries.forEach(({word, meaning}) => {
     meaning.forEach(line => {
         [...line.matchAll(/\[([^\]\+]+)\]/g)].map(m => m[1]).forEach(san => {
             if (!sanketha[san]) console.log(`sanketha ${san} not found. in word ${word}`)
-            sankethaCountsSquare[san] = (sankethaCountsSquare[san] || 0) + 1
+            else sanketha[san].count++
         })
     })
     meaning.forEach(line => {
         [...line.matchAll(/\(([^\)= ]+\.)\)/g)].map(m => m[1]).forEach(san => {
             if (!sanketha[san]) console.log(`sanketha ${san} not found. in word ${word}`)
-            sankethaCountsRound[san] = (sankethaCountsRound[san] || 0) + 1
+            else sanketha[san].count++
         })
     })
     
     return [word, meaning]
 })
 
-fs.writeFileSync(`dev/sanketha-counts-square.csv`, Object.entries(sankethaCountsSquare)
-    .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
-fs.writeFileSync(`dev/sanketha-counts-round.csv`, Object.entries(sankethaCountsRound)
-    .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
+fs.writeFileSync(`public/${dictId}-sanketha-counts.json`, vkb.json(JSON.stringify(sanketha)), 'utf-8')
+//Object.entries(sankethaCounts)
+//    .sort((a, b) => a[0].localeCompare(b[0])).map(pair => pair.join(',')).join('\n'), 'utf-8')
 
 // write sitemap file
 const numEntriesPerPage = 24, numPages = Math.ceil(entries.length / numEntriesPerPage), sitemapLines = []
-for (let i = 1; i <= numPages; i++) sitemapLines.push(`https://arutha.lk/bookpage/sankshiptha/${i}`)
-fs.writeFileSync('public/sitemap-sankshiptha.txt', sitemapLines.join('\n'), 'utf-8')
+for (let i = 1; i <= numPages; i++) sitemapLines.push(`https://arutha.lk/bookpage/${dictId}/${i}`)
+fs.writeFileSync(`public/sitemap-${dictId}.txt`, sitemapLines.join('\n'), 'utf-8')

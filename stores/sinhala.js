@@ -16,7 +16,7 @@ export function useSinhalaStore(dictionaryId) {
                 // see here https://github.com/nuxt/nuxt/issues/18539
                 const [{data: dictData}, {data: sankethaData}] = await Promise.all([
                     useFetch(dictionaryId + '-dict.txt', {baseURL: config.public.baseURL}),
-                    useFetch(dictionaryId + '-sanketha.json', {baseURL: config.public.baseURL})
+                    useFetch(dictionaryId + '-sanketha-counts.json', {baseURL: config.public.baseURL})
                 ])
                 entries.push(...parseDictionary(dictData.value))
                 Object.assign(sanketha, sankethaData.value)

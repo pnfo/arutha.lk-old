@@ -20,7 +20,8 @@ const items = computed(() => {
   const exact = searchTerm.value.endsWith('.')  ///^'.*'$/.test(searchTerm.value)
   const term = exact ? searchTerm.value.slice(0, -1) : searchTerm.value // replace(/^'?(.*?)'?$/, '$1')
   const matches = isSinglishQuery(term) ? getPossibleMatches(term) : [term]
-  if (!term.length || !matches.length || matches.length > 200) {
+  if (!term.length || !matches.length || matches.length > 300) {
+    console.log(matches.length)
     searchError.value = 'input-error'
     return []
   }

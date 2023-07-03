@@ -19,7 +19,7 @@ const item = computed(() => {
         let type = 'normal', tooltip
         if (sankethaPatttern.test(text)) {
           const upart = text.slice(1, -1)
-          tooltip = useSinhalaStore(dictInfo.value.id).sanketha[upart]
+          tooltip = useSinhalaStore(dictInfo.value.id).sanketha[upart].title
           if (tooltip) type = 'sanketha'
         }
         return {type, text, tooltip}
