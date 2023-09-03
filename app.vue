@@ -64,9 +64,10 @@ const searchTerm = ref('')
 // prevent multiple searches that makes the UI sluggish when typing fast in the search box
 let timeoutId
 function doSearch(term) {
-    if (!term.trim().length) return
+    term = term.trim().toLowerCase().replace(/[^a-z\u0D80-\u0DFF \.]/g, '')
+    if (!term.length) return
     clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => navigateTo('/sinhala/' + term.trim()), 400)
+    timeoutId = setTimeout(() => navigateTo('/sinhala/' + term), 400)
 }
 function checkSearch(focused) {
     if (focused && searchTerm.value.length && !useRoute().path.includes('sinhala')) doSearch(searchTerm.value)

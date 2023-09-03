@@ -6,7 +6,7 @@ import { useSavedStore, useSettingsStore } from '@/stores/savedStore'
 import { getSeoTags, copyClipboard } from '@/stores/utils';
 const settingsStore = useSettingsStore(), historyStore = useSavedStore('history')
 
-const searchTerm = computed(() => route.params.term.trim().toLowerCase().replace(/[^a-zA-Z\u0D80-\u0DFF \.]/g, ''))
+const searchTerm = computed(() => route.params.term.trim())
 useSeoMeta(getSeoTags(`“${searchTerm.value}” සෙවුමේ ප්‍රතිඵල`, `“${searchTerm.value}” යන සෙවුම සඳහා ගැළපෙන වචන - අරුත.lk සිංහල ශබ්දකෝෂය.`))
 const searchError = ref('')
 const maxResults = 24

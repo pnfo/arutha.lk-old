@@ -37,14 +37,8 @@ export const useSettingsStore = defineStore('settings-parent', () => {
     const savedStore = useSavedStore('settings', {
         darkMode: true,
         fontSize: 0, // use as fontSize: 18 + state.fontSize + 'px'
-        count: 0,
         dicts: [0, 1],
     }), snackbar = reactive({model: false})
-
-    const doubleCount = computed(() => savedStore.state.count * 2)
-    function increment() {
-        savedStore.setState('count', savedStore.state.count + 1)
-    }
 
     const fontSizeStyle = computed(() => ({fontSize: 18 + savedStore.state.fontSize + 'px'}))
     function loadSettings() {
@@ -63,7 +57,7 @@ export const useSettingsStore = defineStore('settings-parent', () => {
         }
     }
 
-    return { doubleCount, increment, 
+    return {
         loadSettings, setSetting, settings: savedStore.state, fontSizeStyle, 
         setSnackbar, snackbar }
 })
