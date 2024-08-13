@@ -19,7 +19,8 @@ const examples = [
   <div class="ma-1" :style="settingsStore.fontSizeStyle">
     <v-sheet>
       <v-alert border variant="tonal" color="warning" icon="$warning">
-        මෙම වෙබ් අඩවියේ වැඩ කටයුතු තවම අවසන් කර නැති අතර දැනට එකතු කර ඇත්තේ පළවෙනි පොතේ අ සිට න දක්වා වචන පමණක් බව කරුණාවෙන් සලකන්න.
+        මෙම ශබ්දකෝෂයේ පාරිභාෂික වචන 5600 පමණ තිබෙන නමුත් ඉන් බොහොමයක් වචන වලට අදාළ ඉංග්‍රීසි වචන ඇතුළත් වී නොමැත. මේ වචන ඇතුළු කිරීමට ඔබට උපකාර කළ හැකි නම්
+        <v-icon>mdi-email</v-icon> path.nirvana<v-icon>mdi-at</v-icon>gmail.com වෙත පණිවුඩයක් එවන්න.
       </v-alert>
       <div class="text-primary" style="font-size: 4em; text-align: center;">අරුත.lk</div>
       <ul class="mx-8">

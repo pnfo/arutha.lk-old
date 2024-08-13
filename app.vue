@@ -59,6 +59,15 @@
 <script setup>
 useHead({
   titleTemplate: (titleChunk) => titleChunk ? `${titleChunk} - Arutha.lk` : 'Arutha.lk',
+  meta: [
+    { name: 'mobile-web-app-capable', content: 'yes' },
+    { name: 'apple-mobile-web-app-capable', content: 'yes' },
+    { name: 'apple-mobile-web-app-title', content: 'Dictionary' },
+  ],
+  link: [
+    { rel: 'apple-touch-icon', href: 'app-icon.png' },
+    // Add more link tags for other icon sizes if needed
+  ]
 })
 const searchTerm = ref('')
 // prevent multiple searches that makes the UI sluggish when typing fast in the search box

@@ -1,6 +1,6 @@
 
 export const dictionaryInfos = [
-    { index: 0, id: 'sankshiptha', title: 'සංක්ෂිප්ත සිංහල ශබ්දකෝෂය අ-න', icon: 'mdi-alpha-s', color: 'star' },
+    { index: 0, id: 'sankshiptha', title: 'සංක්ෂිප්ත සිංහල ශබ්දකෝෂය', icon: 'mdi-alpha-s', color: 'star' },
     { index: 1, id: 'akshara-vinyasa', title: 'අක්ෂර වින්‍යාසය ශබ්දකෝෂය', icon: 'mdi-alpha-a', color: 'success' }
 ]
 
@@ -11,7 +11,7 @@ export function useSinhalaStore(dictionaryId) {
         
         async function loadData() {
             try {
-                const config = useRuntimeConfig()
+                const config = useRuntimeConfig(), startTime = performance.now()
                 // if called one after the other will cause an error
                 // see here https://github.com/nuxt/nuxt/issues/18539
                 const [{data: dictData}, {data: sankethaData}] = await Promise.all([
@@ -20,7 +20,7 @@ export function useSinhalaStore(dictionaryId) {
                 ])
                 entries.push(...parseDictionary(dictData.value))
                 Object.assign(sanketha, sankethaData.value)
-                console.log(`Dict ${dictionaryId} loaded. entries: ${entries.length}, sanketha: ${Object.keys(sanketha).length}.`)
+                console.log(`Dict ${dictionaryId} loaded. entries: ${entries.length}, sanketha: ${Object.keys(sanketha).length} in ${Math.ceil(performance.now() - startTime)} ms.`)
                 loaded.value = true
             } catch (error) {
                 console.error(`Error loading dict ${dictionaryId}:`, error);
